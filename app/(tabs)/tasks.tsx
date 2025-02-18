@@ -16,14 +16,13 @@ import {
   CircleDashed,
   CircleCheckBig,
   CircleSlash,
+  Focus,
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   useSharedValue,
-  FadeOut,
-  Layout,
 } from 'react-native-reanimated';
 import { BottomPill } from '../../components/BottomPill';
 import { AppScreenLayout } from '../../components/common/AppScreenLayout';
@@ -35,10 +34,13 @@ import { TaskItem } from '../../components/tasks/TaskItem';
 import { useTasks } from '../../src/hooks/useTasks';
 import type { Priority, SortType } from '../../src/types/task';
 import { getPriorityValue, getStatusValue, getNextStatus, getPreviousStatus } from '../../src/types/task';
+import { CameraModal } from '../../components/tasks/CameraModal';
+import { extractTasksFromImage } from '../../src/services/openaiService';
 import { PriorityIcon } from '../../components/tasks/PriorityIcon';
 
 export default function TasksScreen() {
   const { colors } = useTheme();
+  const [showCamera, setShowCamera] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const {
     tasks,
@@ -48,7 +50,7 @@ export default function TasksScreen() {
     updateTask,
     deleteTask,
     refreshTasks,
-    reorderTasks,
+
   } = useTasks();
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -168,6 +170,15 @@ export default function TasksScreen() {
 
         <AnimatedFabButton onPress={handleNewTask} />
 
+        <IconButton
+          icon={<Focus size={24} color={colors.text} />}
+          onPress={() => {
+            console.log('[TasksScreen] Camera button pressed');
+            setShowCamera(true);
+            console.log('[TasksScreen] showCamera set to true');
+          }}
+        />
+
         <Animated.View style={hideCompletedAnimatedStyle}>
           <IconButton
             icon={showCompleted ? (
@@ -207,11 +218,8 @@ export default function TasksScreen() {
         ),
       }}
       bottomContent={bottomPill}>
-      {sortedAndFilteredTasks().map((task, index) => (
-        <Animated.View
-          key={task.id}
-          layout={Layout}
-          exiting={FadeOut.duration(200)}>
+      {sortedAndFilteredTasks().map((task) => (
+        <View key={task.id}>
           <TaskItem
             task={task}
             isEditing={editingId === task.id}
@@ -239,25 +247,8 @@ export default function TasksScreen() {
               setSelectedTaskId(task.id);
               setPriorityModalVisible(true);
             }}
-            onMove={(direction) => {
-              const newIndex = direction === 'up' 
-                ? index - 1 
-                : index + 1;
-
-              if (newIndex < 0 || newIndex >= tasks.length) return;
-
-              // During drag, don't commit changes
-              reorderTasks(index, newIndex, false);
-            }}
-            onDragEnd={() => {
-              // When drag ends, commit the current order to the database
-              const currentIndex = tasks.findIndex(t => t.id === task.id);
-              if (currentIndex !== -1) {
-                reorderTasks(currentIndex, currentIndex, true);
-              }
-            }}
           />
-        </Animated.View>
+        </View>
       ))}
 
       <BlurModal
@@ -269,6 +260,20 @@ export default function TasksScreen() {
         <PriorityOption priority="high" label="High Priority" />
         <PriorityOption priority="urgent" label="Urgent" />
       </BlurModal>
+      <CameraModal
+        isVisible={showCamera}
+        onClose={() => setShowCamera(false)}
+        onPhotoTaken={async (base64Image) => {
+          try {
+            const tasks = await extractTasksFromImage(base64Image);
+            for (const task of tasks) {
+              await addTask(task.title, task.priority);
+            }
+          } catch (error) {
+            console.error('Error processing tasks:', error);
+          }
+        }}
+      />
     </AppScreenLayout>
   );
 }

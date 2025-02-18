@@ -7,13 +7,6 @@ import { commonStyles } from '../../styles/commonStyles';
 import type { Task } from '../../src/types/task';
 import { StatusIcon } from './StatusIcon';
 import { PriorityIcon } from './PriorityIcon';
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  useSharedValue,
-  interpolate,
-  Extrapolate,
-} from 'react-native-reanimated';
 
 interface TaskItemProps {
   task: Task;
@@ -25,9 +18,6 @@ interface TaskItemProps {
   onLongPress: () => void;
   onDelete: () => void;
   onPriorityPress: () => void;
-  onDragStart?: () => void;
-  onDragEnd?: () => void;
-  onMove?: (direction: 'up' | 'down', velocity: number) => void;
 }
 
 export function TaskItem({
@@ -40,15 +30,10 @@ export function TaskItem({
   onLongPress,
   onDelete,
   onPriorityPress,
-  onDragStart,
-  onDragEnd,
-  onMove,
 }: TaskItemProps) {
   const { colors } = useTheme();
   const [localText, setLocalText] = useState(task.text);
-  const [isDragging, setIsDragging] = useState(false);
-  const scale = useSharedValue(1);
-  const translateY = useSharedValue(0);
+
 
   useEffect(() => {
     setLocalText(task.text);
@@ -61,66 +46,13 @@ export function TaskItem({
     onEndEditing();
   };
 
-  const dragAnimatedStyle = useAnimatedStyle(() => {
-    const scaleValue = interpolate(
-      Math.abs(translateY.value),
-      [0, 50],
-      [1, 1.02],
-      Extrapolate.CLAMP
-    );
 
-    return {
-      transform: [
-        { scale: isDragging ? scaleValue : scale.value },
-        { translateY: translateY.value }
-      ],
-      backgroundColor: isDragging ? colors.text + '08' : 'transparent',
-      zIndex: isDragging ? 999 : 0,
-      elevation: isDragging ? 5 : 0,
-      shadowColor: colors.text,
-      shadowOffset: { width: 0, height: isDragging ? 4 : 0 },
-      shadowOpacity: isDragging ? 0.1 : 0,
-      shadowRadius: isDragging ? 8 : 0,
-    };
-  });
-
-  const handleDragStart = () => {
-    setIsDragging(true);
-    scale.value = withSpring(1.02, {
-      mass: 0.5,
-      damping: 20,
-      stiffness: 200,
-    });
-    onDragStart?.();
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    scale.value = withSpring(1, {
-      mass: 0.5,
-      damping: 20,
-      stiffness: 200,
-    });
-    translateY.value = withSpring(0, {
-      mass: 0.5,
-      damping: 20,
-      stiffness: 200,
-    });
-    onDragEnd?.();
-  };
-
-  const handleMove = (direction: 'up' | 'down', velocity: number, distance: number) => {
-    translateY.value = distance;
-    onMove?.(direction, velocity);
-  };
 
   return (
     <SwipeableRow 
       onDelete={onDelete}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onMove={handleMove}>
-      <Animated.View style={[styles.container, dragAnimatedStyle]}>
+>
+      <View style={styles.container}>
         <View style={[commonStyles.row, styles.taskRow]}>
           <IconButton
             icon={
@@ -169,13 +101,14 @@ export function TaskItem({
             </View>
           </Pressable>
         </View>
-      </Animated.View>
+      </View>
     </SwipeableRow>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     borderRadius: 12,
   },
   taskRow: {

@@ -19,6 +19,8 @@ const CalculatorButton = memo(({
   size = 'normal',
   colors,
   icon,
+  theme,
+  useBlackout,
 }: { 
   text: string; 
   onPress: () => void; 
@@ -26,15 +28,28 @@ const CalculatorButton = memo(({
   size?: 'normal' | 'wide';
   colors: { text: string };
   icon?: React.ReactNode;
+  theme: 'light' | 'dark';
+  useBlackout: boolean;
 }) => {
   const getBackgroundColor = () => {
-    switch (type) {
-      case 'operation':
-        return colors.text + '15';
-      case 'function':
-        return colors.text + '08';
-      default:
-        return 'transparent';
+    if (theme === 'dark' && useBlackout) {
+      switch (type) {
+        case 'operation':
+          return '#1C1C1E';
+        case 'function':
+          return `${colors.text}08`;
+        default:
+          return 'transparent';
+      }
+    } else {
+      switch (type) {
+        case 'operation':
+          return `${colors.text}15`;
+        case 'function':
+          return `${colors.text}08`;
+        default:
+          return 'transparent';
+      }
     }
   };
 
@@ -67,7 +82,7 @@ const CalculatorButton = memo(({
 CalculatorButton.displayName = 'CalculatorButton';
 
 export default function CalculatorScreen() {
-  const { colors } = useTheme();
+  const { colors, theme, useBlackout } = useTheme();
   const [displayValue, setDisplayValue] = useState('0');
   const [storedValue, setStoredValue] = useState<number | null>(null);
   const [operation, setOperation] = useState<Operation>(null);
@@ -184,7 +199,7 @@ export default function CalculatorScreen() {
           <Text
             style={[
               styles.equationText,
-              { color: colors.text + '60' },
+              { color: colors.textSecondary },
             ]}>
             {equation}
           </Text>
@@ -197,6 +212,8 @@ export default function CalculatorScreen() {
               onPress={handleClearPress} 
               type="function" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Eraser size={24} color={colors.text} />}
             />
             <CalculatorButton 
@@ -204,6 +221,8 @@ export default function CalculatorScreen() {
               onPress={handleBackspacePress} 
               type="function" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Delete size={24} color={colors.text} />}
             />
             <CalculatorButton 
@@ -214,6 +233,8 @@ export default function CalculatorScreen() {
               }} 
               type="function" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Percent size={24} color={colors.text} />}
             />
             <CalculatorButton 
@@ -221,58 +242,68 @@ export default function CalculatorScreen() {
               onPress={() => handleOperationPress('÷')} 
               type="operation" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Divide size={24} color={colors.text} />}
             />
           </View>
 
           <View style={styles.row}>
-            <CalculatorButton text="7" onPress={() => handleNumberPress('7')} colors={colors} />
-            <CalculatorButton text="8" onPress={() => handleNumberPress('8')} colors={colors} />
-            <CalculatorButton text="9" onPress={() => handleNumberPress('9')} colors={colors} />
+            <CalculatorButton text="7" onPress={() => handleNumberPress('7')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="8" onPress={() => handleNumberPress('8')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="9" onPress={() => handleNumberPress('9')} colors={colors} theme={theme} useBlackout={useBlackout} />
             <CalculatorButton 
               text="×" 
               onPress={() => handleOperationPress('×')} 
               type="operation" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<X size={24} color={colors.text} />}
             />
           </View>
 
           <View style={styles.row}>
-            <CalculatorButton text="4" onPress={() => handleNumberPress('4')} colors={colors} />
-            <CalculatorButton text="5" onPress={() => handleNumberPress('5')} colors={colors} />
-            <CalculatorButton text="6" onPress={() => handleNumberPress('6')} colors={colors} />
+            <CalculatorButton text="4" onPress={() => handleNumberPress('4')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="5" onPress={() => handleNumberPress('5')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="6" onPress={() => handleNumberPress('6')} colors={colors} theme={theme} useBlackout={useBlackout} />
             <CalculatorButton 
               text="-" 
               onPress={() => handleOperationPress('-')} 
               type="operation" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Minus size={24} color={colors.text} />}
             />
           </View>
 
           <View style={styles.row}>
-            <CalculatorButton text="1" onPress={() => handleNumberPress('1')} colors={colors} />
-            <CalculatorButton text="2" onPress={() => handleNumberPress('2')} colors={colors} />
-            <CalculatorButton text="3" onPress={() => handleNumberPress('3')} colors={colors} />
+            <CalculatorButton text="1" onPress={() => handleNumberPress('1')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="2" onPress={() => handleNumberPress('2')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="3" onPress={() => handleNumberPress('3')} colors={colors} theme={theme} useBlackout={useBlackout} />
             <CalculatorButton 
               text="+" 
               onPress={() => handleOperationPress('+')} 
               type="operation" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Plus size={24} color={colors.text} />}
             />
           </View>
 
           <View style={styles.row}>
             <View style={styles.spacer} />
-            <CalculatorButton text="0" onPress={() => handleNumberPress('0')} colors={colors} />
-            <CalculatorButton text="." onPress={handleDecimalPress} colors={colors} />
+            <CalculatorButton text="0" onPress={() => handleNumberPress('0')} colors={colors} theme={theme} useBlackout={useBlackout} />
+            <CalculatorButton text="." onPress={handleDecimalPress} colors={colors} theme={theme} useBlackout={useBlackout} />
             <CalculatorButton 
               text="=" 
               onPress={handleEqualsPress} 
               type="operation" 
               colors={colors}
+              theme={theme}
+              useBlackout={useBlackout}
               icon={<Equal size={24} color={colors.text} />}
             />
           </View>
@@ -293,14 +324,6 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 20 : 16,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
   },
   display: {
     alignItems: 'flex-end',

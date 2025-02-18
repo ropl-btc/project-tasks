@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Triangle,
   AlertTriangle,
-  Octagon,
+  OctagonAlert,
   CircleSlash,
 } from 'lucide-react-native';
 import type { Priority } from '../../src/types/task';
@@ -28,7 +28,7 @@ export function PriorityIcon({
     case 'high':
       return <AlertTriangle size={size} color="#f97316" />;
     case 'urgent':
-      return <Octagon size={size} color="#ef4444" />;
+      return <OctagonAlert size={size} color="#ef4444" />;
     case 'none':
       return showNoIcon ? <CircleSlash size={size} color={color} /> : null;
     default:

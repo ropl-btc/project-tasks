@@ -33,13 +33,13 @@ export function useTasks() {
     setIsRefreshing(false);
   };
 
-  const addTask = async (text: string) => {
+  const addTask = async (text: string, priority: Task['priority'] = 'none') => {
     if (!session?.user?.id) return null;
 
     const newTask = {
       text,
       status: 'not-started' as const,
-      priority: 'none' as const,
+      priority,
       order: tasks.length,
       user_id: session.user.id,
     };

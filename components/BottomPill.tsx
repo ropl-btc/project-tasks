@@ -7,15 +7,18 @@ interface BottomPillProps {
   children: React.ReactNode;
   style?: any;
   floating?: boolean;
+  circular?: boolean;
 }
 
-export function BottomPill({ children, style, floating = true }: BottomPillProps) {
+export function BottomPill({ children, style, floating = true, circular = false }: BottomPillProps) {
   const { theme } = useTheme();
 
+  const { colors } = useTheme();
+
   const pillBackgroundStyle = {
-    backgroundColor: Platform.OS === 'web' 
-      ? 'transparent' 
-      : `${theme === 'dark' ? '#ffffff' : '#000000'}10`,
+    backgroundColor: Platform.OS === 'web'
+      ? 'transparent'
+      : `${colors.text}14`,
   };
 
   return (
@@ -25,6 +28,7 @@ export function BottomPill({ children, style, floating = true }: BottomPillProps
       style={[
         styles.pill,
         floating && styles.floating,
+        circular && styles.circular,
         pillBackgroundStyle,
         style
       ]}>
@@ -36,6 +40,12 @@ export function BottomPill({ children, style, floating = true }: BottomPillProps
 }
 
 const styles = StyleSheet.create({
+  circular: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    padding: 0,
+  },
   pill: {
     borderRadius: 32,
     overflow: 'hidden',
@@ -46,8 +56,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   content: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,

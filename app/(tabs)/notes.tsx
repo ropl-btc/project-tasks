@@ -31,7 +31,7 @@ import { getPreviewText } from '../../src/utils/textUtils';
 import { formatDate } from '../../src/utils/formatDate';
 
 export default function NotesScreen() {
-  const { colors, theme } = useTheme();
+  const { colors, theme, useBlackout } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const richTextRef = useRef<RichEditor>(null);
   const {
@@ -170,32 +170,32 @@ export default function NotesScreen() {
             layout={Layout}
             exiting={FadeOut.duration(200)}>
             <SwipeableRow onDelete={() => handleDelete(note.id)}>
-              <View
+              <Pressable
                 style={[
                   styles.noteCard,
-                  { backgroundColor: colors.text + '08' },
-                ]}>
+                  { backgroundColor: theme === 'dark' && useBlackout ? '#1C1C1E' : `${colors.text}14` }
+                ]}
+                onPress={() => handleNotePress(note.id)}>
                 <Text
                   style={[styles.notePreview, { color: colors.text }]}
-                  numberOfLines={1}
-                  onPress={() => handleNotePress(note.id)}>
+                  numberOfLines={1}>
                   {getPreviewText(note.content)}
                 </Text>
-                <Text style={[styles.noteDate, { color: colors.text + '60' }]}>
+                <Text style={[styles.noteDate, { color: colors.textSecondary }]}>
                   {formatDate(new Date(note.updated_at))}
                 </Text>
-              </View>
+              </Pressable>
             </SwipeableRow>
           </Animated.View>
         ))}
       </ScrollView>
 
       <Animated.View style={[styles.bottomPillContainer, animatedBottomPillStyle]}>
-        <BottomPill>
+        <BottomPill circular>
           <Animated.View style={[{ transform: [{ scale: fabScale }] }]}>
             <Pressable
               onPress={handleNewNote}
-              style={styles.iconButton}>
+              style={[styles.iconButton, { width: 56, height: 56 }]}>
               <CircleFadingPlus
                 size={24}
                 color={colors.text}
@@ -277,10 +277,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    padding: 20,
+    paddingVertical: 20,
     paddingBottom: 100,
+    paddingHorizontal: 20,
   },
   noteCard: {
+    width: '100%',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,

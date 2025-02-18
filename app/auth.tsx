@@ -50,7 +50,7 @@ export default function AuthScreen() {
         </Text>
 
         {error && (
-          <Text style={[styles.error, { color: '#ef4444' }]}>{error}</Text>
+          <Text style={[styles.error, { color: colors.error }]}>{error}</Text>
         )}
 
         <TextInput
