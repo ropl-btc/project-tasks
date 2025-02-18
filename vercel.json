@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "rewrites": [
+  "routes": [
     {
-      "src": "/((?!.*\\.(js|css|png|jpg|jpeg|svg|ico)$).*)",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
