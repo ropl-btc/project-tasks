@@ -1,4 +1,4 @@
-# Robin App
+# Tasks App
 
 A modern task management app with AI-powered features for capturing handwritten tasks.
 
@@ -30,7 +30,7 @@ cp .env.example .env
 ```
 Edit `.env` and add your:
 - Supabase credentials
-- OpenAI API key (for GPT-4V)
+- OpenAI API key (for GPT-4o)
 - Claude API key (optional)
 
 4. Start the development server
@@ -43,7 +43,7 @@ npm start
 - React Native with Expo
 - TypeScript
 - Supabase for backend
-- OpenAI GPT-4V for image processing
+- OpenAI GPT-4o for image processing
 - Claude AI (alternative option)
 - Expo Camera
 
